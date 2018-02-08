@@ -14,11 +14,7 @@ var app = express();
 //connect to body-parser
 app.use(bodyParser.json())
  
-app.use(function (req, res) {
-  res.setHeader('Content-Type', 'text/plain')
-  res.write('you posted:\n')
-  res.end(JSON.stringify(req.body, null, 2))
-})
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 //connect to express-handlebars
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
@@ -29,8 +25,17 @@ app.get('/', function (req, res) {
 });
 
 
-//connect to mongoose
+// configure database with mongoose
 mongoose.connect('mongodb://localhost/my_database');
+var db = mongoose.connection;
+
+//show any mongoose errors
+db.on("error", function(error) {
+	console.log("Mongoose Error:", error);
+});
+
+
+
 
 //use cheerio to scrape news
 const $ = cheerio.load('<h2 class="">Hello world</h2>');
